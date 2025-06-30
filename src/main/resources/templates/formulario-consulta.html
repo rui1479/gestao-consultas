@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Marcar Consulta</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+    <div class="container">
+        <h1>Marcar Consulta</h1>
+        <form th:action="@{/paciente/marcar}" th:object="${consulta}" method="post">
+
+            <div class="form-group">
+                <label for="dataConsulta">Data:</label>
+                <input type="date" id="dataConsulta" th:field="*{dataConsulta}" 
+                th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required/>
+                <span class="error" th:if="${#fields.hasErrors('dataConsulta')}" th:errors="*{dataConsulta}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="horaConsulta">Hora:</label>
+                <input type="time" id="horaConsulta" th:field="*{horaConsulta}" min="09:00" max="18:00"  required/>
+                <span class="error" th:if="${#fields.hasErrors('horaConsulta')}" th:errors="*{horaConsulta}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="medico">Médico:</label>
+                <select id="medico" th:field="*{medico}" required>
+                    <option value="" disabled selected>Selecione um médico</option>
+                    <option th:each="m : ${medicos}" 
+                            th:value="${m.id}" 
+                            th:text="${m.nome}"></option>
+                </select>
+                <span th:if="${#fields.hasErrors('medico')}" th:errors="*{medico}"></span>
+                <br/>
+            </div>
+
+            <div class="form-group">
+                <label for="observacoes">Descrição:</label>
+                <input type="text" id="observacoes" th:field="*{observacoes}" />
+                <span class="error" th:if="${#fields.hasErrors('observacoes')}" th:errors="*{observacoes}"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label>Estado:</label>
+                <input type="hidden" th:field="*{estado}" th:value="'PENDENTE'" />
+                <span>PENDENTE</span>
+                <span class="error" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></span>
+            </div>
+
+
+
+            <div class="form-group">
+                <button type="submit">Marcar Consulta</button>
+            </div>
+            <div th:if="${mensagemSucesso}" class="success-message" th:text="${mensagemSucesso}"></div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <title>Página do Médico</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/medico.css}" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#" th:text="${username} + ' - Médico'">Médico</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <form th:action="@{/logout}" method="post" th:object="${#httpServletRequest}">
+                        <button type="submit" class="btn btn-link nav-link" style="padding: 0; border: none; background: none; margin-top: 15%;">Logout</button>
+                    </form>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <h1>Bem-vindo, <span th:text="${username}">Dr. Médico</span>!</h1>
+        <p>Aqui poderá gerir as suas consultas.</p>
+
+        <div class="container p-3 mt-3">
+                <div class="analysis mt-5 mb-4 p-5" style="background-color: rgb(235, 241, 235); border-radius: 10px;">
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        <div class="col">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body text-center">
+                                    <h5><i class="fas fa-calendar-days"></i>Consultas Canceladas</h5>
+                                    <h2 th:text="${totalAppointments}"></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h5><i class="fas fa-check"></i>Consultas Conluidas</h5>
+                                    <h2 th:text="${totalBooked}"></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body text-center">
+                                    <h5><i class="fas fa-clock"></i>Consultas Pendentes</h5>
+                                    <h2 th:text="${totalPending}"></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Filtrar por Data</h2>
+            <form th:action="@{/medico}" method="get" class="mb-3">
+                <div class="input-group" style="width: 300px;">
+                    <input type="date" name="dataFiltro" id="dataFiltro" class="form-control" 
+                           th:value="${dataFiltro != null }" 
+                           th:attr="min=${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required/>
+                    <button type="submit" class="btn btn-primary" >Filtrar</button>
+                    <a href="/medico" class="btn btn-warning ms-2" >Resetar</a>
+                </div>
+            </form>
+            
+        <section>
+            <h2>Próximas Consultas</h2>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Descrição</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="consulta : ${consultas}">
+                        <td th:text="${consulta.paciente.nome}"></td>
+                        <td th:text="${consulta.dataConsulta}"></td>
+                        <td th:text="${consulta.horaConsulta}"></td>
+                        <td th:text="${consulta.observacoes} ?: 'Sem descrição'"></td>
+                        <td>
+                             <form th:action="@{'/medico/atualizarEstado/' + ${consulta.id}}" method="post">
+                                <select name="estado" required>
+                                    <option value="" disabled>Selecione o estado</option>
+                                    <option value="PENDENTE" th:selected="${consulta.estado == 'PENDENTE'}">Pendente</option>
+                                    <option value="CONCLUÍDA" th:selected="${consulta.estado == 'CONCLUÍDA'}">Concluída</option>
+                                    <option value="CANCELADA" th:selected="${consulta.estado == 'CANCELADA'}">Cancelada</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary mt-2" style="margin-left: 5%;">Atualizar</button>
+                            </form>
+                        </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
